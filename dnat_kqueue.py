@@ -14,7 +14,7 @@ class Forward(object):
         try:
             self.forward.connect((host, port))
             return self.forward
-        except socket.errno as e:
+        except socket.error as e:
             print e.errno
             return False
 
