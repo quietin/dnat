@@ -53,27 +53,27 @@ class Server(object):
 
     @staticmethod
     def connection_ready(sock, events):
-        while True:
-            try:
-                conn, address = sock.accept()
-            except socket.error as e:
-                if e.errno not in (errno.EWOULDBLOCK, errno.EAGAIN):
-                    raise
-                return
-            conn.setblocking(0)
+        try:
+            conn, address = sock.accept()
+        except socket.error as e:
+            if e.errno not in (errno.EWOULDBLOCK, errno.EAGAIN):
+                raise
+            return
+        conn.setblocking(0)
 
-            server = Server(sock, conn, address)
-            server.on_accept()
-            try:
-                data = server.client.recv(buffer_size)
-            except socket.error as e:
-                if e.errno not in (errno.EWOULDBLOCK, errno.EAGAIN):
-                    raise
+        server = Server(sock, conn, address)
+        server.on_accept()
+        data = ''
+        try:
+            data = server.client.recv(buffer_size)
+        except socket.error as e:
+            if e.errno not in (errno.EWOULDBLOCK, errno.EAGAIN):
+                raise
 
-            if len(data) == 0:
-                server.on_close()
-            else:
-                server.on_recv(data)
+        if len(data) == 0:
+            server.on_close()
+        else:
+            server.on_recv(data)
 
 
 def start_listen_socket(host, port):
